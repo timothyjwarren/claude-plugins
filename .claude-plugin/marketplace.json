@@ -1,0 +1,10 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "claude-plugins",
+  "description": "Personal Claude Code plugin marketplace",
+  "plugins": [
+    { "name": "android-builder",   "source": { "source": "local" } },
+    { "name": "android-installer", "source": { "source": "local" } },
+    { "name": "readme-writer",     "source": { "source": "local" } }
+  ]
+}
