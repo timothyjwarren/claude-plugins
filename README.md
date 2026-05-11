@@ -15,5 +15,5 @@ Personal Claude Code plugin marketplace.
 Add this marketplace to Claude Code:
 
 ```
-/marketplace add <github-url>
+/marketplace add https://github.com/timothyjwarren/claude-plugins
 ```
