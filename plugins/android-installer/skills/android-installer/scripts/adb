@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Shim that routes adb commands through the persistent adb-server container.
+set -euo pipefail
+
+CONTAINER="adb-server"
+
+if [[ "$(docker inspect -f '{{.State.Running}}' "$CONTAINER" 2>/dev/null)" != "true" ]]; then
+  echo "error: adb-server container is not running. Start it with: scripts/start-adb-server.sh" >&2
+  exit 1
+fi
+
+# Allocate a TTY when stdin is a terminal (needed for `adb shell`)
+[[ -t 0 ]] && TTY=-t || TTY=
+exec docker exec -i $TTY "$CONTAINER" adb "$@"

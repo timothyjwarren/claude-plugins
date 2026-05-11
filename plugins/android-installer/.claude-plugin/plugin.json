@@ -1,0 +1,5 @@
+{
+  "name": "android-installer",
+  "description": "Install APKs on Android devices wirelessly — no USB, no local Android SDK, runs entirely in Docker",
+  "category": "development"
+}
