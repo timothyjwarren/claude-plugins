@@ -1,6 +1,9 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "claude-plugins",
+  "name": "tjwdev-claude-plugins",
+  "owner": {
+    "name": "tjw"
+  },
   "description": "Personal Claude Code plugin marketplace",
   "plugins": [
     { "name": "android-builder",   "source": { "source": "local" } },
