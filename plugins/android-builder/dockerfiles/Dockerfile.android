@@ -1,0 +1,28 @@
+FROM eclipse-temurin:21.0.5_11-jdk-noble
+
+ENV ANDROID_HOME=/opt/android-sdk
+ENV PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
+ENV ANDROID_ADB_SERVER_ADDRESS=host.docker.internal
+
+RUN apt-get update && apt-get install -y \
+    curl \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Android command-line tools v12.0 (build 11076708, Nov 2024)
+# To verify or update: https://developer.android.com/studio#command-line-tools-only
+RUN mkdir -p $ANDROID_HOME/cmdline-tools && \
+    curl -L https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip \
+         -o /tmp/cmdline-tools.zip && \
+    echo "2d2d50857e4eb553af5a6dc3ad507a17adf43d115264b1afc116f95c92e5e258 /tmp/cmdline-tools.zip" | sha256sum -c && \
+    unzip -q /tmp/cmdline-tools.zip -d $ANDROID_HOME/cmdline-tools && \
+    mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest && \
+    rm /tmp/cmdline-tools.zip
+
+RUN yes | sdkmanager --licenses >/dev/null && \
+    sdkmanager \
+      "platform-tools" \
+      "build-tools;34.0.0" \
+      "platforms;android-34"
+
+WORKDIR /workspace

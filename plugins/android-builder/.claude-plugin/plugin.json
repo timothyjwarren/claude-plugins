@@ -1,0 +1,5 @@
+{
+  "name": "android-builder",
+  "description": "Build Kotlin/JVM and Android projects without a local SDK — runs entirely in Docker",
+  "category": "development"
+}
