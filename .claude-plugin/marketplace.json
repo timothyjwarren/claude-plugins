@@ -6,8 +6,8 @@
   },
   "description": "Personal Claude Code plugin marketplace",
   "plugins": [
-    { "name": "android-builder",   "source": "./plugins/android-builder" },
-    { "name": "android-installer", "source": "./plugins/android-installer" },
-    { "name": "readme-writer",     "source": "./plugins/readme-writer" }
+    { "name": "android-builder",   "source": "./plugins/android-builder",   "description": "Build Kotlin/JVM and Android projects without a local SDK — runs entirely in Docker" },
+    { "name": "android-installer", "source": "./plugins/android-installer", "description": "Install APKs on Android devices wirelessly — no USB, no local Android SDK, runs entirely in Docker" },
+    { "name": "readme-writer",     "source": "./plugins/readme-writer",     "description": "Write user-focused README files tailored to how the project actually works" }
   ]
 }
