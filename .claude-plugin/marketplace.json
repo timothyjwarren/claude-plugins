@@ -6,8 +6,8 @@
   },
   "description": "Personal Claude Code plugin marketplace",
   "plugins": [
-    { "name": "android-builder",   "source": { "source": "local" } },
-    { "name": "android-installer", "source": { "source": "local" } },
-    { "name": "readme-writer",     "source": { "source": "local" } }
+    { "name": "android-builder",   "source": "./plugins/android-builder" },
+    { "name": "android-installer", "source": "./plugins/android-installer" },
+    { "name": "readme-writer",     "source": "./plugins/readme-writer" }
   ]
 }
