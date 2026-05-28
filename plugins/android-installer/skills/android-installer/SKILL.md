@@ -38,7 +38,7 @@ There are two distinct executables in `scripts/`:
 Before pairing for the first time, check whether the binary already exists and build it only if missing:
 
 ```bash
-ls "$SKILL_ROOT/scripts/adb-wireless" 2>/dev/null || bash "$SKILL_ROOT/scripts/build-adb-wireless.sh"
+ls "$SKILL_ROOT/scripts/adb-wireless" 2>/dev/null || "$SKILL_ROOT/scripts/build-adb-wireless.sh"
 ```
 
 Output binary is written to `scripts/adb-wireless` inside the skill root directory.
@@ -48,13 +48,13 @@ Output binary is written to `scripts/adb-wireless` inside the skill root directo
 ### Step 1 — Start the adb server
 
 ```bash
-bash "$SKILL_ROOT/scripts/start-adb-server.sh"
+"$SKILL_ROOT/scripts/start-adb-server.sh"
 ```
 
 ### Step 2 — Pair via QR code
 
 ```bash
-bash "$SKILL_ROOT/scripts/pair.sh"
+"$SKILL_ROOT/scripts/pair.sh"
 ```
 
 A QR code will appear in the terminal. On the device: open **Settings > Developer options > Wireless debugging > Pair device with QR code**, then scan the QR code.
@@ -66,7 +66,7 @@ A QR code will appear in the terminal. On the device: open **Settings > Develope
 Ask the user: "What is the IP address and port shown under Settings > Developer options > Wireless debugging?" Then run:
 
 ```bash
-bash "$SKILL_ROOT/scripts/connect.sh" <device-ip>:<port>
+"$SKILL_ROOT/scripts/connect.sh" <device-ip>:<port>
 ```
 
 ### Step 4 — Install the APK
@@ -74,7 +74,7 @@ bash "$SKILL_ROOT/scripts/connect.sh" <device-ip>:<port>
 Ask the user for the absolute path to their APK file if not already provided. Then run:
 
 ```bash
-bash "$SKILL_ROOT/scripts/install.sh" /absolute/path/to/app.apk
+"$SKILL_ROOT/scripts/install.sh" /absolute/path/to/app.apk
 ```
 
 ### Step 5 — Clean up
@@ -92,15 +92,15 @@ Skip the pairing steps. The device remembers the pairing.
 First, ensure `scripts/adb-wireless` exists (it is not tracked by git, so a fresh clone won't have it):
 
 ```bash
-ls "$SKILL_ROOT/scripts/adb-wireless" 2>/dev/null || bash "$SKILL_ROOT/scripts/build-adb-wireless.sh"
+ls "$SKILL_ROOT/scripts/adb-wireless" 2>/dev/null || "$SKILL_ROOT/scripts/build-adb-wireless.sh"
 ```
 
 Then connect and install. Ask the user for their device IP:port and APK path if not already provided:
 
 ```bash
-bash "$SKILL_ROOT/scripts/start-adb-server.sh"
-bash "$SKILL_ROOT/scripts/connect.sh" <device-ip>:<port>
-bash "$SKILL_ROOT/scripts/install.sh" /absolute/path/to/app.apk
+"$SKILL_ROOT/scripts/start-adb-server.sh"
+"$SKILL_ROOT/scripts/connect.sh" <device-ip>:<port>
+"$SKILL_ROOT/scripts/install.sh" /absolute/path/to/app.apk
 ```
 
 When done, stop the adb server:
