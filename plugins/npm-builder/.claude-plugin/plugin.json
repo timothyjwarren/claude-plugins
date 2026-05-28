@@ -1,0 +1,5 @@
+{
+  "name": "npm-builder",
+  "description": "Run npm/bun scripts without a local Node.js installation — runs entirely in Docker",
+  "category": "development"
+}
