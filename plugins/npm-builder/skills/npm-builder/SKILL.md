@@ -1,6 +1,6 @@
 ---
 name: npm-builder
-description: Run npm/bun scripts without a local Node.js installation — runs entirely in Docker. Use when asked to install dependencies, build, test, or run any package.json script in a Node.js or Bun project. Trigger on: "npm install", "run the build", "run tests", "bun install", "build the project", or any npm/bun script invocation.
+description: Run npm/bun scripts without a local Node.js installation — runs entirely in Docker. Use when asked to execute, run, or invoke npm/bun commands or package.json scripts in a Node.js or Bun project — including installing dependencies, building, testing, linting, typechecking, or running any custom script. Trigger on: "npm install", "npm ci", "npm run <script>", "bun install", "bun run <script>", "run the build", "run the tests", "run the dev server", "build the project", or any request to actually execute something in a Node.js/Bun project. Do not trigger just for editing package.json without running anything.
 ---
 
 ## Prerequisites
