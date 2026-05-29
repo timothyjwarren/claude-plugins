@@ -8,6 +8,26 @@ NPM_ARGS=()
 
 for arg in "$@"; do
   case "$arg" in
+    --help|-h)
+      cat <<'USAGE'
+Usage: run-for-agent.sh [OPTIONS] [NPM_ARGS...]
+
+Options:
+  --pm=npm|bun|auto   Force package manager (default: auto-detect)
+  --port=SPEC         Forward a port: PORT or HOST:CONTAINER (repeatable)
+  --stream            Stream output instead of capturing to a log file
+  --help, -h          Show this help
+
+Default command if no NPM_ARGS given: run build
+
+Examples:
+  run-for-agent.sh install
+  run-for-agent.sh run build
+  run-for-agent.sh --port=5173 --stream run dev -- --host
+  run-for-agent.sh --pm=bun run test
+USAGE
+      exit 0
+      ;;
     --pm=npm)    PM="npm" ;;
     --pm=bun)    PM="bun" ;;
     --pm=auto)   PM="auto" ;;
