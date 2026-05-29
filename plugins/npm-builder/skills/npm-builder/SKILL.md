@@ -79,6 +79,31 @@ Override with `--pm=npm`, `--pm=bun`, or `--pm=auto`:
 <skill-base-dir>/run-for-agent.sh --pm=npm run build
 ```
 
+## Dev Servers (Port Forwarding)
+
+For scripts that start a long-running server (e.g., `dev`, `start`, `preview`), use `--port` to forward ports and `--stream` to see output in real time instead of capturing to a log:
+
+```bash
+<skill-base-dir>/run-for-agent.sh --port=3000 --stream run dev
+```
+
+**`--port=SPEC`** — Forward a port from the container to the host. `SPEC` is either `PORT` (same port on both sides) or `HOST_PORT:CONTAINER_PORT`. Repeat the flag for multiple ports:
+
+```bash
+<skill-base-dir>/run-for-agent.sh --port=3000 --port=4000 --stream run dev
+```
+
+**`--stream`** — Stream stdout/stderr directly instead of capturing to a log file. Use this for dev servers so you can see startup messages. In `--stream` mode, the script exits with Docker's exit code directly (no `run succeeded` / `run failed` wrapper).
+
+To run a dev server in the background so other commands can proceed:
+
+```bash
+<skill-base-dir>/run-for-agent.sh --port=3000 --stream run dev &
+DEV_PID=$!
+# ... do other things ...
+kill $DEV_PID
+```
+
 ## Environment Variables
 
 - `TEMP` — directory for run logs (defaults to `/tmp`). If set, logs go to `$TEMP/npm-build-*.log`

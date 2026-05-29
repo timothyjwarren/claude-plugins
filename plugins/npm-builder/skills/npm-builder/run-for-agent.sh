@@ -2,14 +2,18 @@
 set -uo pipefail
 
 PM="auto"
+STREAM=0
+PORT_FLAGS=()
 NPM_ARGS=()
 
 for arg in "$@"; do
   case "$arg" in
-    --pm=npm)  PM="npm" ;;
-    --pm=bun)  PM="bun" ;;
-    --pm=auto) PM="auto" ;;
-    *)         NPM_ARGS+=("$arg") ;;
+    --pm=npm)    PM="npm" ;;
+    --pm=bun)    PM="bun" ;;
+    --pm=auto)   PM="auto" ;;
+    --stream)    STREAM=1 ;;
+    --port=*)    PORT_FLAGS+=("-p" "${arg#--port=}") ;;
+    *)           NPM_ARGS+=("$arg") ;;
   esac
 done
 
@@ -46,7 +50,19 @@ LOG_FILE="$TEMP/npm-build-$TIMESTAMP.log"
 
 mkdir -p "$CACHE_DIR"
 
+if [ "$STREAM" -eq 1 ]; then
+  docker run --rm $PLATFORM_FLAG \
+    "${PORT_FLAGS[@]+"${PORT_FLAGS[@]}"}" \
+    -v "$(pwd):/workspace" \
+    -w /workspace \
+    -v "$CACHE_DIR:$CACHE_MOUNT" \
+    "$IMAGE" \
+    "$PM" "${NPM_ARGS[@]}"
+  exit $?
+fi
+
 docker run --rm $PLATFORM_FLAG \
+  "${PORT_FLAGS[@]+"${PORT_FLAGS[@]}"}" \
   -v "$(pwd):/workspace" \
   -w /workspace \
   -v "$CACHE_DIR:$CACHE_MOUNT" \
