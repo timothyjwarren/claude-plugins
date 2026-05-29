@@ -12,7 +12,12 @@ for arg in "$@"; do
     --pm=bun)    PM="bun" ;;
     --pm=auto)   PM="auto" ;;
     --stream)    STREAM=1 ;;
-    --port=*)    PORT_FLAGS+=("-p" "${arg#--port=}") ;;
+    --port=*)
+      SPEC="${arg#--port=}"
+      # bare number → HOST:CONTAINER (same port on both sides)
+      [[ "$SPEC" == *:* ]] || SPEC="$SPEC:$SPEC"
+      PORT_FLAGS+=("-p" "$SPEC")
+      ;;
     *)           NPM_ARGS+=("$arg") ;;
   esac
 done
