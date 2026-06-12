@@ -20,6 +20,14 @@ Run once per project before first use:
 <skill-base-dir>/setup-claude.sh
 ```
 
+By default this writes the guard hook to `.claude/settings.local.json` (gitignored, local to you — not shared via git). If the user wants this hook enforced for everyone working on this project, ask them, then run:
+
+```bash
+<skill-base-dir>/setup-claude.sh --shared
+```
+
+This writes to `.claude/settings.json` instead, which is committed to the repo.
+
 ## Running Commands
 
 **Build everything:**

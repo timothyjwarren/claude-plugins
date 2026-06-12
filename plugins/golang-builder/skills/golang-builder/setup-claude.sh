@@ -3,8 +3,31 @@ set -uo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 PROJECT_DIR=$(pwd)
-SETTINGS_FILE="$PROJECT_DIR/.claude/settings.json"
 GUARD_SCRIPT="$SCRIPT_DIR/go-build-guard.sh"
+
+SETTINGS_NAME="settings.local.json"
+for arg in "$@"; do
+  case "$arg" in
+    --shared) SETTINGS_NAME="settings.json" ;;
+    --help|-h)
+      cat <<'USAGE'
+Usage: setup-claude.sh [--shared]
+
+Installs the go-build-guard.sh PreToolUse hook for this project.
+
+  (default)  Write to .claude/settings.local.json (gitignored, local to you)
+  --shared   Write to .claude/settings.json (committed, shared with the team)
+USAGE
+      exit 0
+      ;;
+    *)
+      echo "ERROR: unknown argument '$arg'" >&2
+      exit 1
+      ;;
+  esac
+done
+
+SETTINGS_FILE="$PROJECT_DIR/.claude/$SETTINGS_NAME"
 
 if [ ! -f "$GUARD_SCRIPT" ]; then
   echo "ERROR: go-build-guard.sh not found at $GUARD_SCRIPT" >&2
@@ -48,7 +71,7 @@ PYEOF
 
 echo "setup complete"
 echo ""
-echo "PreToolUse hook configured: $GUARD_SCRIPT"
+echo "PreToolUse hook configured in .claude/$SETTINGS_NAME: $GUARD_SCRIPT"
 echo ""
 echo "To build:"
 echo "  $SCRIPT_DIR/run-for-agent.sh build ./..."
