@@ -59,6 +59,8 @@ All stdout/stderr is suppressed. Script reports only:
 - `build succeeded` — exit 0
 - `build failed` — exit non-zero; log path written to stderr
 
+This output is one or two short lines — run the script directly and read its output as-is. Don't redirect stderr to a file and `cat` it afterward; that's unnecessary extra steps for output this small.
+
 ## On Build Failure
 
 The script writes `log: /path/to/log` to stderr. Read the log:
