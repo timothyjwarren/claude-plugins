@@ -1,0 +1,5 @@
+{
+  "name": "agent-directory",
+  "description": "Standard directory layout for agent-authored files — context, docs, and scripts — kept separate from human-authored project files",
+  "category": "productivity"
+}

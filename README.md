@@ -6,6 +6,7 @@ A personal collection of Claude Code plugins.
 
 | Plugin | What it does |
 |--------|-------------|
+| [agent-directory](plugins/agent-directory/) | Standard place for agent-authored files (context, docs, scripts) — kept separate from human project files. |
 | [android-builder](plugins/android-builder/) | Build Kotlin/JVM and Android projects -- no local SDK, no Gradle installation, no JDK version juggling. Runs in Docker. |
 | [android-installer](plugins/android-installer/) | Install APKs on Android devices wirelessly. No USB cable, no Android Studio, no local ADB. Runs in Docker. |
 | [golang-builder](plugins/golang-builder/) | Build, test, and vet Go projects across multiple Go versions, including cross-compilation. No local Go installation needed. Runs in Docker. |
