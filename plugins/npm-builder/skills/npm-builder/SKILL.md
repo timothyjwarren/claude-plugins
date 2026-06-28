@@ -7,18 +7,9 @@ description: Run npm/bun scripts without a local Node.js installation — runs e
 
 Before building:
 - Docker must be running
-- `setup-claude.sh` must have been run in this project (configures hooks)
-- Hooks are active: direct `npm`, `npx`, `node`, `bun`, `bunx` calls will be blocked
+- Direct `npm`, `npx`, `node`, `bun`, `bunx` calls are blocked by the plugin hook — use `run-for-agent.sh` instead
 
 This skill directory contains all necessary scripts. When invoked, the base directory is shown in the skill header.
-
-## Project Setup
-
-Run once per project before first use:
-
-```bash
-<skill-base-dir>/setup-claude.sh
-```
 
 ## Running Scripts
 
