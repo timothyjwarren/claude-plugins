@@ -7,18 +7,11 @@ description: Build Kotlin/JVM and Android projects via Docker without local SDK 
 
 Before building:
 - Docker must be running
-- `setup-claude.sh` must have been run in this project (configures hooks)
-- Hooks are active: direct `gradle`, `./gradlew`, `javac`, `kotlinc` calls will be blocked
+- Direct `gradle`, `./gradlew`, `javac`, `kotlinc` calls are blocked by the plugin hook — use `build-for-agent.sh` instead
 
 This skill directory contains all necessary scripts. When invoked, the base directory is shown in the skill header.
 
 ## Project Bootstrap
-
-Run once per project before first build:
-
-```bash
-<skill-base-dir>/setup-claude.sh
-```
 
 If the project has no `gradlew` yet (new project, not cloned with existing wrapper):
 

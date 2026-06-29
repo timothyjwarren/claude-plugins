@@ -7,26 +7,9 @@ description: Build, test, and vet Go projects across multiple Go versions — ru
 
 Before building:
 - Docker must be running
-- `setup-claude.sh` must have been run in this project (configures hooks)
-- Hooks are active: direct `go` and `gofmt` calls will be blocked
+- Direct `go` and `gofmt` calls are blocked by the plugin hook — use `run-for-agent.sh` instead
 
 This skill directory contains all necessary scripts. When invoked, the base directory is shown in the skill header.
-
-## Project Setup
-
-Run once per project before first use:
-
-```bash
-<skill-base-dir>/setup-claude.sh
-```
-
-By default this writes the guard hook to `.claude/settings.local.json` (gitignored, local to you — not shared via git). If the user wants this hook enforced for everyone working on this project, ask them, then run:
-
-```bash
-<skill-base-dir>/setup-claude.sh --shared
-```
-
-This writes to `.claude/settings.json` instead, which is committed to the repo.
 
 ## Running Commands
 
