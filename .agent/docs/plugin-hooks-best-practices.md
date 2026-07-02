@@ -8,7 +8,7 @@ date: 2026-06-28
 
 Hooks belong in `hooks/hooks.json` at the plugin root (alongside `.claude-plugin/`). The harness manages registration and updates automatically.
 
-Use `${CLAUDE_PLUGIN_ROOT}` to reference scripts — the harness substitutes it with the plugin's current install directory wherever it appears in hook commands, skill content, MCP/LSP config, etc.
+Use `${CLAUDE_PLUGIN_ROOT}` to reference scripts — the harness substitutes it with the plugin's current install directory wherever it appears in hook commands, skill content, MCP/LSP config, etc. In SKILL.md bodies, write script paths as `${CLAUDE_PLUGIN_ROOT}/skills/<skill-name>/<script>` directly; the model executes this literally, so it always resolves through the stable path rather than the resolved absolute cache path shown when the skill loads.
 
 ```json
 {

@@ -9,34 +9,32 @@ Before building:
 - Docker must be running
 - Direct `go` and `gofmt` calls are blocked by the plugin hook — use `run-for-agent.sh` instead
 
-This skill directory contains all necessary scripts. When invoked, the base directory is shown in the skill header.
-
 ## Running Commands
 
 **Build everything:**
 ```bash
-<skill-base-dir>/run-for-agent.sh build ./...
+${CLAUDE_PLUGIN_ROOT}/skills/golang-builder/run-for-agent.sh build ./...
 ```
 
 **Test everything:**
 ```bash
-<skill-base-dir>/run-for-agent.sh test ./...
+${CLAUDE_PLUGIN_ROOT}/skills/golang-builder/run-for-agent.sh test ./...
 ```
 
 **Vet:**
 ```bash
-<skill-base-dir>/run-for-agent.sh vet ./...
+${CLAUDE_PLUGIN_ROOT}/skills/golang-builder/run-for-agent.sh vet ./...
 ```
 
 **Module commands:**
 ```bash
-<skill-base-dir>/run-for-agent.sh mod tidy
-<skill-base-dir>/run-for-agent.sh mod download
+${CLAUDE_PLUGIN_ROOT}/skills/golang-builder/run-for-agent.sh mod tidy
+${CLAUDE_PLUGIN_ROOT}/skills/golang-builder/run-for-agent.sh mod download
 ```
 
 **Any `go` subcommand:**
 ```bash
-<skill-base-dir>/run-for-agent.sh <go args>
+${CLAUDE_PLUGIN_ROOT}/skills/golang-builder/run-for-agent.sh <go args>
 ```
 
 Default command if none specified: `build ./...`.
@@ -56,7 +54,7 @@ cat <log-path>
 ```
 
 Common issues:
-- No `go.mod`: run `<skill-base-dir>/run-for-agent.sh mod init <module-path>`
+- No `go.mod`: run `${CLAUDE_PLUGIN_ROOT}/skills/golang-builder/run-for-agent.sh mod init <module-path>`
 - Missing dependencies: run `mod download` or `mod tidy` first
 - Compile errors: full output in the log
 
@@ -67,7 +65,7 @@ The script auto-detects the Go version from the `go` directive in `./go.mod` (e.
 Override with `--go-version`:
 
 ```bash
-<skill-base-dir>/run-for-agent.sh --go-version=1.21 test ./...
+${CLAUDE_PLUGIN_ROOT}/skills/golang-builder/run-for-agent.sh --go-version=1.21 test ./...
 ```
 
 **Note:** `--go-version` must be >= the version required by `go.mod`'s `go` directive. Go's toolchain enforcement (`GOTOOLCHAIN`) will fail the run if you specify an older version than `go.mod` requires.
@@ -78,11 +76,11 @@ Use `--target` to set `GOOS`/`GOARCH` (and `CGO_ENABLED=0`) for the build, produ
 
 ```bash
 # Build a binary for the host machine (e.g. macOS arm64) and run it directly — no Docker needed
-<skill-base-dir>/run-for-agent.sh --target=host build -o myapp ./cmd/myapp
+${CLAUDE_PLUGIN_ROOT}/skills/golang-builder/run-for-agent.sh --target=host build -o myapp ./cmd/myapp
 ./myapp
 
 # Build for an explicit GOOS/GOARCH
-<skill-base-dir>/run-for-agent.sh --target=linux/amd64 build -o myapp-linux ./cmd/myapp
+${CLAUDE_PLUGIN_ROOT}/skills/golang-builder/run-for-agent.sh --target=linux/amd64 build -o myapp-linux ./cmd/myapp
 ```
 
 `--target=host` detects the host OS/arch via `uname` so the resulting binary runs natively on the host.

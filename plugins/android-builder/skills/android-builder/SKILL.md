@@ -9,14 +9,12 @@ Before building:
 - Docker must be running
 - Direct `gradle`, `./gradlew`, `javac`, `kotlinc` calls are blocked by the plugin hook — use `build-for-agent.sh` instead
 
-This skill directory contains all necessary scripts. When invoked, the base directory is shown in the skill header.
-
 ## Project Bootstrap
 
 If the project has no `gradlew` yet (new project, not cloned with existing wrapper):
 
 ```bash
-<skill-base-dir>/gradle-init.sh
+${CLAUDE_PLUGIN_ROOT}/skills/android-builder/gradle-init.sh
 ```
 
 `gradle-init.sh` is idempotent — safe to run if unsure whether a wrapper exists.
@@ -25,25 +23,25 @@ If the project has no `gradlew` yet (new project, not cloned with existing wrapp
 
 **Standard Kotlin/JVM build** (compile, test, package JAR):
 ```bash
-<skill-base-dir>/build-for-agent.sh --mode=standard
+${CLAUDE_PLUGIN_ROOT}/skills/android-builder/build-for-agent.sh --mode=standard
 ```
 
 **Standard build with explicit Gradle tasks:**
 ```bash
-<skill-base-dir>/build-for-agent.sh --mode=standard test
-<skill-base-dir>/build-for-agent.sh --mode=standard build -x test
+${CLAUDE_PLUGIN_ROOT}/skills/android-builder/build-for-agent.sh --mode=standard test
+${CLAUDE_PLUGIN_ROOT}/skills/android-builder/build-for-agent.sh --mode=standard build -x test
 ```
 
 **Android APK build:**
 ```bash
-<skill-base-dir>/build-for-agent.sh --mode=android
+${CLAUDE_PLUGIN_ROOT}/skills/android-builder/build-for-agent.sh --mode=android
 ```
 
 **Android with explicit tasks:**
 ```bash
-<skill-base-dir>/build-for-agent.sh --mode=android assembleRelease
-<skill-base-dir>/build-for-agent.sh --mode=android installDebug
-<skill-base-dir>/build-for-agent.sh --mode=android connectedAndroidTest
+${CLAUDE_PLUGIN_ROOT}/skills/android-builder/build-for-agent.sh --mode=android assembleRelease
+${CLAUDE_PLUGIN_ROOT}/skills/android-builder/build-for-agent.sh --mode=android installDebug
+${CLAUDE_PLUGIN_ROOT}/skills/android-builder/build-for-agent.sh --mode=android connectedAndroidTest
 ```
 
 Default tasks if none specified: `build` (standard), `assembleDebug` (android).

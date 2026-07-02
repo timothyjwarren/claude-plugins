@@ -9,33 +9,31 @@ Before building:
 - Docker must be running
 - Direct `npm`, `npx`, `node`, `bun`, `bunx` calls are blocked by the plugin hook — use `run-for-agent.sh` instead
 
-This skill directory contains all necessary scripts. When invoked, the base directory is shown in the skill header.
-
 ## Running Scripts
 
 **Install dependencies:**
 ```bash
-<skill-base-dir>/run-for-agent.sh install
+${CLAUDE_PLUGIN_ROOT}/skills/npm-builder/run-for-agent.sh install
 ```
 
 **Build:**
 ```bash
-<skill-base-dir>/run-for-agent.sh run build
+${CLAUDE_PLUGIN_ROOT}/skills/npm-builder/run-for-agent.sh run build
 ```
 
 **Test:**
 ```bash
-<skill-base-dir>/run-for-agent.sh run test
+${CLAUDE_PLUGIN_ROOT}/skills/npm-builder/run-for-agent.sh run test
 ```
 
 **Any package.json script:**
 ```bash
-<skill-base-dir>/run-for-agent.sh run <script-name>
+${CLAUDE_PLUGIN_ROOT}/skills/npm-builder/run-for-agent.sh run <script-name>
 ```
 
 **Any direct npm/bun command:**
 ```bash
-<skill-base-dir>/run-for-agent.sh <npm-or-bun-args>
+${CLAUDE_PLUGIN_ROOT}/skills/npm-builder/run-for-agent.sh <npm-or-bun-args>
 ```
 
 Default command if none specified: `run build`.
@@ -66,8 +64,8 @@ The script detects which package manager to use:
 Override with `--pm=npm`, `--pm=bun`, or `--pm=auto`:
 
 ```bash
-<skill-base-dir>/run-for-agent.sh --pm=bun install
-<skill-base-dir>/run-for-agent.sh --pm=npm run build
+${CLAUDE_PLUGIN_ROOT}/skills/npm-builder/run-for-agent.sh --pm=bun install
+${CLAUDE_PLUGIN_ROOT}/skills/npm-builder/run-for-agent.sh --pm=npm run build
 ```
 
 ## Dev Servers (Port Forwarding)
@@ -75,13 +73,13 @@ Override with `--pm=npm`, `--pm=bun`, or `--pm=auto`:
 For scripts that start a long-running server (e.g., `dev`, `start`, `preview`), use `--port` to forward ports and `--stream` to see output in real time instead of capturing to a log:
 
 ```bash
-<skill-base-dir>/run-for-agent.sh --port=3000 --stream run dev
+${CLAUDE_PLUGIN_ROOT}/skills/npm-builder/run-for-agent.sh --port=3000 --stream run dev
 ```
 
 **`--port=SPEC`** — Forward a port from the container to the host. `SPEC` is either `PORT` (same port on both sides, e.g. `--port=3000`) or `HOST_PORT:CONTAINER_PORT`. Repeat the flag for multiple ports:
 
 ```bash
-<skill-base-dir>/run-for-agent.sh --port=3000 --port=4000 --stream run dev
+${CLAUDE_PLUGIN_ROOT}/skills/npm-builder/run-for-agent.sh --port=3000 --port=4000 --stream run dev
 ```
 
 **`--stream`** — Stream stdout/stderr directly instead of capturing to a log file. Use this for dev servers so you can see startup messages. In `--stream` mode, the script exits with Docker's exit code directly (no `run succeeded` / `run failed` wrapper).
@@ -91,7 +89,7 @@ For scripts that start a long-running server (e.g., `dev`, `start`, `preview`), 
 To run a dev server in the background so other commands can proceed:
 
 ```bash
-<skill-base-dir>/run-for-agent.sh --port=3000 --stream run dev &
+${CLAUDE_PLUGIN_ROOT}/skills/npm-builder/run-for-agent.sh --port=3000 --stream run dev &
 DEV_PID=$!
 # ... do other things ...
 kill $DEV_PID
