@@ -9,7 +9,7 @@ if [[ ! -x "$BIN" ]]; then
   exit 1
 fi
 
-# Make the bundled adb shim visible to adb-wireless
+# Make the bundled `adb` passthrough visible to adb-wireless's internal shell-out
 export PATH="$ROOT:$PATH"
 
 echo "Opening a new Terminal window to display the QR code..."

@@ -2,7 +2,36 @@
 date: 2026-07-02
 ---
 
-# Plugin Hooks, Scripts, and Persistent Data
+# Plugin Structure, Hooks, and Persistent Data
+
+## Directory Structure
+
+Every top-level directory/file a plugin can have, per the [standard plugin layout](https://code.claude.com/docs/en/plugins-reference). All of these sit at the plugin root, as siblings of `.claude-plugin/` — never inside it.
+
+| Location | Auto-discovered? | Manifest field (default behavior) |
+|---|---|---|
+| `skills/<name>/SKILL.md` | Yes | `skills` — **adds to** the default scan |
+| `commands/*.md` | Yes | `commands` — **replaces** the default scan |
+| `agents/*.md` | Yes | `agents` — **replaces** the default scan |
+| `output-styles/*.md` | Yes | `outputStyles` — **replaces** the default scan |
+| `themes/*.json` | Yes | `experimental.themes` — **replaces** the default scan |
+| `monitors/monitors.json` | Yes | `experimental.monitors` — **replaces** the default scan |
+| `hooks/hooks.json` | Yes | `hooks` — **merges** with the default file |
+| `.mcp.json` | Yes | `mcpServers` — **merges** with the default file |
+| `.lsp.json` | Yes | `lspServers` — **merges** with the default file |
+| `bin/*` | Yes (added to Bash `PATH`) | not configurable — always scanned |
+| `scripts/*` | No — referenced explicitly | not configurable — pure convention |
+| `settings.json` | Yes | not configurable — always scanned |
+| `.claude-plugin/plugin.json` | n/a (the manifest itself) | — |
+
+**Where to put an agent-facing script — the two real choices:**
+
+- **`bin/`** — for anything the agent (or a human) is meant to run directly as a command, e.g. from a SKILL.md instruction. Files here are added to the Bash tool's `PATH` while the plugin is enabled, so they're invokable as bare commands (`my-tool args`, no path). This is what makes permission rules survive plugin updates — see the `bin/` section below.
+- **`scripts/`** — for helper code that only other plugin components call (hooks, MCP/LSP servers, monitors), never the agent directly. No PATH injection; always referenced by explicit path, e.g. `${CLAUDE_PLUGIN_ROOT}/scripts/format-code.sh`. This is a naming convention only, not special harness behavior — but following it keeps a plugin's "public interface" (`bin/`) visually separate from its internals (`scripts/`).
+
+**Skills vs. commands:** `skills/` is a directory per skill (`SKILL.md` plus optional reference docs, scripts, assets) and is the preferred structure for anything nontrivial. `commands/` is flat markdown files, one command per file, for lightweight cases with no supporting files. The docs say to prefer `skills/` for new plugins.
+
+**Manifest override semantics matter:** most component fields (`commands`, `agents`, `outputStyles`, themes, monitors) *replace* the default directory scan if set at all — so declaring `"commands": ["./extra.md"]` in `plugin.json` means the default `commands/` directory is no longer scanned unless you list it too. `hooks`, `mcpServers`, and `lspServers` *merge* instead. `skills` *adds to* the default scan rather than replacing it. None of our plugins in this repo declare any of these fields — everything relies on pure directory-convention auto-discovery, which is the simplest approach and the right default until a plugin actually needs a non-standard layout.
 
 ## Configuration
 

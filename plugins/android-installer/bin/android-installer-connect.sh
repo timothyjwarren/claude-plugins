@@ -9,6 +9,6 @@ if [[ $# -ne 1 ]]; then
   exit 1
 fi
 
-"$ROOT/adb" connect "$1"
+"$ROOT/android-installer-adb" connect "$1"
 echo
-"$ROOT/adb" devices
+"$ROOT/android-installer-adb" devices

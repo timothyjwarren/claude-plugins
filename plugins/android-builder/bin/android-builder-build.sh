@@ -21,7 +21,7 @@ if [ -z "$MODE" ]; then
 fi
 
 if [ ! -f "./gradlew" ]; then
-  echo "build failed: ./gradlew not found; run gradle-init.sh first" >&2
+  echo "build failed: ./gradlew not found; run android-builder-gradle-init.sh first" >&2
   exit 1
 fi
 

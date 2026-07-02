@@ -24,10 +24,10 @@ Follow this workflow in order. The pairing and server startup steps are stateful
 
 There are two distinct executables:
 
-- **`adb`** — a bash shim that routes adb commands into the persistent `adb-server` Docker container. It ships in the plugin's `bin/` (committed); no build is needed. It is used by `android-installer-connect.sh`.
+- **`android-installer-adb`** — a bash shim that routes adb commands into the persistent `adb-server` Docker container. It ships in the plugin's `bin/` (committed); no build is needed. It is used by `android-installer-connect.sh`, and is the command to run directly for any manual/diagnostic adb usage.
 - **`adb-wireless`** — a native macOS binary compiled from source, written to `${CLAUDE_PLUGIN_DATA}/adb-wireless` (a persistent directory that survives plugin updates — not the plugin's own install tree, which gets wiped on every update). It is a build artifact and must be built once before the first pairing. It is used only by `android-installer-pair.sh` for QR-code pairing.
 
-`android-installer-pair.sh` prepends the plugin's `bin/` to `PATH` before running `adb-wireless`. This is intentional: `adb-wireless` internally shells out to `adb` during the pairing handshake, and the shim should answer — not any system-installed `adb` (which may not exist or may point to a different server).
+There's also an unprefixed `adb` file in `bin/` — a thin passthrough to `android-installer-adb`, kept only because `adb-wireless` internally shells out to bare `adb` during the pairing handshake and needs that exact name on `PATH` to find the shim rather than any system-installed `adb`. It's not meant to be invoked directly (a `PreToolUse` hook blocks bare `adb`); always use `android-installer-adb`.
 
 ## First-time setup: build adb-wireless binary
 
@@ -116,3 +116,4 @@ If any step fails, read the file `references/troubleshooting.md` in the skill ro
 | `android-installer-pair.sh` | Pairs the device via QR code (Android 11+). Run once per device. |
 | `android-installer-connect.sh` | Connects to a paired device by IP:port. Run each session. |
 | `android-installer-install.sh` | Installs an APK onto the connected device. |
+| `android-installer-adb` | Runs an adb command directly against the persistent adb-server container. Use for manual/diagnostic checks. |

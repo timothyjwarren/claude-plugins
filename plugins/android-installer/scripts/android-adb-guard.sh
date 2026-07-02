@@ -17,7 +17,7 @@ BLOCKED_CMDS=("adb")
 for blocked in "${BLOCKED_CMDS[@]}"; do
   if [ "$CMD" = "$blocked" ]; then
     echo "ERROR: Direct use of '$CMD' is blocked in this project." >&2
-    echo "Use the android-installer skill's scripts instead: android-installer-start-adb-server.sh, android-installer-pair.sh, android-installer-connect.sh, android-installer-install.sh." >&2
+    echo "Use android-installer-adb instead, or one of the android-installer skill's scripts: android-installer-start-adb-server.sh, android-installer-pair.sh, android-installer-connect.sh, android-installer-install.sh." >&2
     exit 2
   fi
 done

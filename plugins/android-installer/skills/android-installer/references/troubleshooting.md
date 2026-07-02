@@ -4,8 +4,9 @@ This file is loaded by Claude agents when something goes wrong during the
 wireless ADB install workflow.
 
 > **Note:** This skill has no host-resident `adb` binary. All adb commands use
-> the `adb` shim bundled in the plugin's `bin/`, which routes through the
-> `adb-server` Docker container.
+> `android-installer-adb`, a shim bundled in the plugin's `bin/`, which routes
+> through the `adb-server` Docker container. A `PreToolUse` hook blocks bare
+> `adb` invocations — always use `android-installer-adb`.
 
 ---
 
@@ -27,7 +28,7 @@ the wrong gateway address was resolved. Debug steps:
 docker network inspect bridge --format '{{range .IPAM.Config}}{{.Gateway}}{{end}}'
 
 # Verify adb is listening on the host:
-adb devices   # starts the server if not running
+android-installer-adb devices   # starts the server if not running
 
 # Temporarily override inside a test container:
 docker run --rm -e ANDROID_ADB_SERVER_ADDRESS=<gateway-ip> \
@@ -55,8 +56,8 @@ variable.
 
 ```bash
 # Kill any rogue servers on the host:
-adb kill-server
-adb start-server   # restarts cleanly on port 5037
+android-installer-adb kill-server
+android-installer-adb start-server   # restarts cleanly on port 5037
 
 # Do NOT start adb inside the container manually.
 ```
@@ -89,8 +90,8 @@ a directory that persists across plugin updates. After building, re-run
 `android-installer-pair.sh`.
 
 Note: `android-installer-pair.sh` prepends the plugin's `bin/` to `PATH` so
-that the bundled `adb` shim is found automatically — no manual PATH change
-needed.
+that `adb-wireless`'s internal shell-out to bare `adb` finds the bundled
+passthrough automatically — no manual PATH change needed.
 
 ---
 
@@ -105,7 +106,7 @@ device's wireless debugging session remains active and trust is not revoked.
 - The user revokes trust via:
   `Settings → Developer options → Wireless debugging → Paired devices → (revoke)`
 
-**Symptom:** `adb devices` shows the device as unauthorized or not listed at all
+**Symptom:** `android-installer-adb devices` shows the device as unauthorized or not listed at all
 after a reboot or settings change.
 
 **Fix:** re-run both scripts:
@@ -139,8 +140,9 @@ android-installer-connect.sh
    pairing daemon on the device needs a moment to advertise.
 
 5. `android-installer-pair.sh` adds the plugin's `bin/` to the front of `PATH`
-   automatically, so the bundled `adb` shim is found without any manual PATH
-   configuration. If you see `adb: command not found` inside the script, the
-   plugin install may be corrupted — reinstall the plugin. Do not run
-   `android-installer-build-adb-wireless.sh` to fix this; that only creates
-   `adb-wireless`.
+   automatically, so `adb-wireless`'s internal shell-out to bare `adb` finds
+   the bundled passthrough (which forwards to `android-installer-adb`)
+   without any manual PATH configuration. If you see `adb: command not found`
+   inside the script, the plugin install may be corrupted — reinstall the
+   plugin. Do not run `android-installer-build-adb-wireless.sh` to fix this;
+   that only creates `adb-wireless`.
