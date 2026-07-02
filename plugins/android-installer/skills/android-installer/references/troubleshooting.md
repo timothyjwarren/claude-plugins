@@ -4,14 +4,14 @@ This file is loaded by Claude agents when something goes wrong during the
 wireless ADB install workflow.
 
 > **Note:** This skill has no host-resident `adb` binary. All adb commands use
-> the shim at `$SKILL_ROOT/scripts/adb`, which routes through the `adb-server`
-> Docker container.
+> the `adb` shim bundled in the plugin's `bin/`, which routes through the
+> `adb-server` Docker container.
 
 ---
 
 ## 1. Install container cannot reach the adb server (host-gateway issues)
 
-The install container must reach the adb server running on the host. `install.sh`
+The install container must reach the adb server running on the host. `android-installer-install.sh`
 resolves the host address automatically:
 
 - **Docker Desktop (Mac / Windows):** uses `host.docker.internal`, which Docker
@@ -27,7 +27,7 @@ the wrong gateway address was resolved. Debug steps:
 docker network inspect bridge --format '{{range .IPAM.Config}}{{.Gateway}}{{end}}'
 
 # Verify adb is listening on the host:
-"$SKILL_ROOT/scripts/adb" devices   # starts the server if not running
+adb devices   # starts the server if not running
 
 # Temporarily override inside a test container:
 docker run --rm -e ANDROID_ADB_SERVER_ADDRESS=<gateway-ip> \
@@ -55,39 +55,42 @@ variable.
 
 ```bash
 # Kill any rogue servers on the host:
-"$SKILL_ROOT/scripts/adb" kill-server
-"$SKILL_ROOT/scripts/adb" start-server   # restarts cleanly on port 5037
+adb kill-server
+adb start-server   # restarts cleanly on port 5037
 
 # Do NOT start adb inside the container manually.
 ```
 
 Only one adb server should be running at a time — the one on the host that
-`install.sh` connects to.
+`android-installer-install.sh` connects to.
 
 ---
 
 ## 3. adb-wireless binary missing
 
-`pair.sh` requires a compiled `adb-wireless` binary at `scripts/adb-wireless`.
-This binary is not tracked by git and must be built once before pairing.
+`android-installer-pair.sh` requires a compiled `adb-wireless` binary at
+`${CLAUDE_PLUGIN_DATA}/adb-wireless`. This binary is a build artifact and must
+be built once before pairing.
 
 **Error message:**
 
 ```
-error: .../scripts/adb-wireless not found. Run scripts/build-adb-wireless.sh first.
+error: .../adb-wireless not found. Run android-installer-build-adb-wireless.sh first.
 ```
 
 **Fix:**
 
 ```bash
-bash "$SKILL_ROOT/scripts/build-adb-wireless.sh"
+android-installer-build-adb-wireless.sh
 ```
 
-The script compiles the binary and places it at `scripts/adb-wireless` inside the
-skill directory. After building, re-run `pair.sh`.
+The script compiles the binary and places it at `${CLAUDE_PLUGIN_DATA}/adb-wireless`,
+a directory that persists across plugin updates. After building, re-run
+`android-installer-pair.sh`.
 
-Note: `pair.sh` prepends `scripts/` to `PATH` so that `scripts/adb` (bundled) is found
-automatically — no manual PATH change needed.
+Note: `android-installer-pair.sh` prepends the plugin's `bin/` to `PATH` so
+that the bundled `adb` shim is found automatically — no manual PATH change
+needed.
 
 ---
 
@@ -108,8 +111,8 @@ after a reboot or settings change.
 **Fix:** re-run both scripts:
 
 ```bash
-bash "$SKILL_ROOT/scripts/pair.sh"
-bash "$SKILL_ROOT/scripts/connect.sh"
+android-installer-pair.sh
+android-installer-connect.sh
 ```
 
 ---
@@ -118,11 +121,11 @@ bash "$SKILL_ROOT/scripts/connect.sh"
 
 **Checklist:**
 
-1. Confirm `scripts/adb-wireless` exists and is executable:
+1. Confirm the `adb-wireless` binary exists and is executable:
    ```bash
-   ls -l "$SKILL_ROOT/scripts/adb-wireless"
+   ls -l "${CLAUDE_PLUGIN_DATA}/adb-wireless"
    ```
-   If missing, run `scripts/build-adb-wireless.sh` (see section 3).
+   If missing, run `android-installer-build-adb-wireless.sh` (see section 3).
 
 2. On the Android device, verify **Wireless debugging is enabled**:
    `Settings → Developer options → Wireless debugging` — the toggle must be on.
@@ -132,11 +135,12 @@ bash "$SKILL_ROOT/scripts/connect.sh"
    subnets.
 
 4. If the terminal shows a blank screen with no QR code after several seconds,
-   kill `pair.sh` (Ctrl-C) and re-run it. Occasionally the pairing daemon on
-   the device needs a moment to advertise.
+   kill `android-installer-pair.sh` (Ctrl-C) and re-run it. Occasionally the
+   pairing daemon on the device needs a moment to advertise.
 
-5. `pair.sh` adds `scripts/` to the front of `PATH` automatically, so `scripts/adb` is
-   found without any manual PATH configuration. If you see `adb: command not
-   found` inside the script, `scripts/adb` is a committed file in the skill — if it
-   is missing, re-clone or re-install the skill. Do not run
-   `build-adb-wireless.sh` to fix this; that only creates `scripts/adb-wireless`.
+5. `android-installer-pair.sh` adds the plugin's `bin/` to the front of `PATH`
+   automatically, so the bundled `adb` shim is found without any manual PATH
+   configuration. If you see `adb: command not found` inside the script, the
+   plugin install may be corrupted — reinstall the plugin. Do not run
+   `android-installer-build-adb-wireless.sh` to fix this; that only creates
+   `adb-wireless`.

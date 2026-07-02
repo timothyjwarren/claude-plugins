@@ -10,7 +10,7 @@ for arg in "$@"; do
   case "$arg" in
     --help|-h)
       cat <<'USAGE'
-Usage: run-for-agent.sh [OPTIONS] [NPM_ARGS...]
+Usage: npm-builder-run.sh [OPTIONS] [NPM_ARGS...]
 
 Options:
   --pm=npm|bun|auto   Force package manager (default: auto-detect)
@@ -21,10 +21,10 @@ Options:
 Default command if no NPM_ARGS given: run build
 
 Examples:
-  run-for-agent.sh install
-  run-for-agent.sh run build
-  run-for-agent.sh --port=5173 --stream run dev -- --host
-  run-for-agent.sh --pm=bun run test
+  npm-builder-run.sh install
+  npm-builder-run.sh run build
+  npm-builder-run.sh --port=5173 --stream run dev -- --host
+  npm-builder-run.sh --pm=bun run test
 USAGE
       exit 0
       ;;

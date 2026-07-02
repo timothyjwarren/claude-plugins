@@ -9,7 +9,7 @@ for arg in "$@"; do
   case "$arg" in
     --help|-h)
       cat <<'USAGE'
-Usage: run-for-agent.sh [OPTIONS] [GO_ARGS...]
+Usage: golang-builder-run.sh [OPTIONS] [GO_ARGS...]
 
 Options:
   --go-version=X.Y      Force Go version (default: read from go.mod, else "latest")
@@ -20,10 +20,10 @@ Options:
 Default command if no GO_ARGS given: build ./...
 
 Examples:
-  run-for-agent.sh build ./...
-  run-for-agent.sh test ./...
-  run-for-agent.sh --go-version=1.21 vet ./...
-  run-for-agent.sh --target=host build -o myapp ./cmd/myapp
+  golang-builder-run.sh build ./...
+  golang-builder-run.sh test ./...
+  golang-builder-run.sh --go-version=1.21 vet ./...
+  golang-builder-run.sh --target=host build -o myapp ./cmd/myapp
 USAGE
       exit 0
       ;;

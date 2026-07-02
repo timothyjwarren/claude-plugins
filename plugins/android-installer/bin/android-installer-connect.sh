@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="$(cd "$(dirname "$0")" && pwd)"
 
 if [[ $# -ne 1 ]]; then
   echo "Usage: $0 <device-ip>:<port>" >&2
@@ -9,6 +9,6 @@ if [[ $# -ne 1 ]]; then
   exit 1
 fi
 
-"$ROOT/scripts/adb" connect "$1"
+"$ROOT/adb" connect "$1"
 echo
-"$ROOT/scripts/adb" devices
+"$ROOT/adb" devices

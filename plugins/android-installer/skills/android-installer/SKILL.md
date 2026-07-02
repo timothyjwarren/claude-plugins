@@ -13,10 +13,6 @@ Follow this workflow in order. The pairing and server startup steps are stateful
 - The adb server itself runs inside Docker — nothing Android-related is installed on the host
 - The only host requirement is Docker
 
-## Skill root
-
-The skill system prints a line like `Base directory for this skill: /path/to/skill` before this document is shown. Capture that path as `SKILL_ROOT` and use it to construct all script paths. Example: if that line reads `Base directory for this skill: /path/to/.claude/plugins/my-plugin/1.0.0/skills/android-installer`, then set `SKILL_ROOT=/path/to/.claude/plugins/my-plugin/1.0.0/skills/android-installer`.
-
 ## Prerequisites
 
 - Docker is installed and running
@@ -26,47 +22,45 @@ The skill system prints a line like `Base directory for this skill: /path/to/ski
 
 ## The two binaries
 
-There are two distinct executables in `scripts/`:
+There are two distinct executables:
 
-- **`scripts/adb`** — a bash shim that routes adb commands into the persistent `adb-server` Docker container. It is already present in the skill directory (committed); no build is needed. It is used by `connect.sh`.
-- **`scripts/adb-wireless`** — a native macOS binary compiled from source. It is a build artifact (not tracked by git) and must be built once before the first pairing. It is used only by `pair.sh` for QR-code pairing.
+- **`adb`** — a bash shim that routes adb commands into the persistent `adb-server` Docker container. It ships in the plugin's `bin/` (committed); no build is needed. It is used by `android-installer-connect.sh`.
+- **`adb-wireless`** — a native macOS binary compiled from source, written to `${CLAUDE_PLUGIN_DATA}/adb-wireless` (a persistent directory that survives plugin updates — not the plugin's own install tree, which gets wiped on every update). It is a build artifact and must be built once before the first pairing. It is used only by `android-installer-pair.sh` for QR-code pairing.
 
-`pair.sh` prepends `scripts/` to `PATH` before running `adb-wireless`. This is intentional: `adb-wireless` internally shells out to `adb` during the pairing handshake, and the shim at `scripts/adb` is what should answer — not any system-installed `adb` (which may not exist or may point to a different server).
+`android-installer-pair.sh` prepends the plugin's `bin/` to `PATH` before running `adb-wireless`. This is intentional: `adb-wireless` internally shells out to `adb` during the pairing handshake, and the shim should answer — not any system-installed `adb` (which may not exist or may point to a different server).
 
 ## First-time setup: build adb-wireless binary
 
 Before pairing for the first time, check whether the binary already exists and build it only if missing:
 
 ```bash
-ls "$SKILL_ROOT/scripts/adb-wireless" 2>/dev/null || "$SKILL_ROOT/scripts/build-adb-wireless.sh"
+ls "${CLAUDE_PLUGIN_DATA}/adb-wireless" 2>/dev/null || android-installer-build-adb-wireless.sh
 ```
-
-Output binary is written to `scripts/adb-wireless` inside the skill root directory.
 
 ## Workflow A: First session (device not yet paired)
 
 ### Step 1 — Start the adb server
 
 ```bash
-"$SKILL_ROOT/scripts/start-adb-server.sh"
+android-installer-start-adb-server.sh
 ```
 
 ### Step 2 — Pair via QR code
 
 ```bash
-"$SKILL_ROOT/scripts/pair.sh"
+android-installer-pair.sh
 ```
 
 A new Terminal window will open displaying the QR code. On the device: open **Settings > Developer options > Wireless debugging > Pair device with QR code**, then scan the QR code. Close the Terminal window when done.
 
-**Note:** `pair.sh` opens a separate window because Claude Code's TUI mangles the Unicode block characters used to render QR codes. The script returns immediately; pairing completes in the background window.
+**Note:** `android-installer-pair.sh` opens a separate window because Claude Code's TUI mangles the Unicode block characters used to render QR codes. The script returns immediately; pairing completes in the background window.
 
 ### Step 3 — Connect to the device
 
 Ask the user: "What is the IP address and port shown under Settings > Developer options > Wireless debugging?" Then run:
 
 ```bash
-"$SKILL_ROOT/scripts/connect.sh" <device-ip>:<port>
+android-installer-connect.sh <device-ip>:<port>
 ```
 
 ### Step 4 — Install the APK
@@ -74,7 +68,7 @@ Ask the user: "What is the IP address and port shown under Settings > Developer 
 Ask the user for the absolute path to their APK file if not already provided. Then run:
 
 ```bash
-"$SKILL_ROOT/scripts/install.sh" /absolute/path/to/app.apk
+android-installer-install.sh /absolute/path/to/app.apk
 ```
 
 ### Step 5 — Clean up
@@ -89,18 +83,18 @@ docker stop adb-server
 
 Skip the pairing steps. The device remembers the pairing.
 
-First, ensure `scripts/adb-wireless` exists (it is not tracked by git, so a fresh clone won't have it):
+First, ensure the `adb-wireless` binary exists (it lives in `${CLAUDE_PLUGIN_DATA}`, so a fresh plugin install won't have it yet):
 
 ```bash
-ls "$SKILL_ROOT/scripts/adb-wireless" 2>/dev/null || "$SKILL_ROOT/scripts/build-adb-wireless.sh"
+ls "${CLAUDE_PLUGIN_DATA}/adb-wireless" 2>/dev/null || android-installer-build-adb-wireless.sh
 ```
 
 Then connect and install. Ask the user for their device IP:port and APK path if not already provided:
 
 ```bash
-"$SKILL_ROOT/scripts/start-adb-server.sh"
-"$SKILL_ROOT/scripts/connect.sh" <device-ip>:<port>
-"$SKILL_ROOT/scripts/install.sh" /absolute/path/to/app.apk
+android-installer-start-adb-server.sh
+android-installer-connect.sh <device-ip>:<port>
+android-installer-install.sh /absolute/path/to/app.apk
 ```
 
 When done, stop the adb server:
@@ -117,8 +111,8 @@ If any step fails, read the file `references/troubleshooting.md` in the skill ro
 
 | Script | Purpose |
 |--------|---------|
-| `scripts/build-adb-wireless.sh` | Builds the Docker-based adb-wireless binary into `scripts/adb-wireless`. Run once. |
-| `scripts/start-adb-server.sh` | Starts the adb server inside Docker. Run at the start of every session. |
-| `scripts/pair.sh` | Pairs the device via QR code (Android 11+). Run once per device. |
-| `scripts/connect.sh` | Connects to a paired device by IP:port. Run each session. |
-| `scripts/install.sh` | Installs an APK onto the connected device. |
+| `android-installer-build-adb-wireless.sh` | Builds the Docker-based adb-wireless binary into `${CLAUDE_PLUGIN_DATA}/adb-wireless`. Run once. |
+| `android-installer-start-adb-server.sh` | Starts the adb server inside Docker. Run at the start of every session. |
+| `android-installer-pair.sh` | Pairs the device via QR code (Android 11+). Run once per device. |
+| `android-installer-connect.sh` | Connects to a paired device by IP:port. Run each session. |
+| `android-installer-install.sh` | Installs an APK onto the connected device. |
