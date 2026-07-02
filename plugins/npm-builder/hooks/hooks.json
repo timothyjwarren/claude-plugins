@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/skills/npm-builder/npm-build-guard.sh"
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/npm-build-guard.sh"
           }
         ]
       }

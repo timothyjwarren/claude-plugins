@@ -12,12 +12,12 @@ except Exception:
     print('')
 " 2>/dev/null)
 
-BLOCKED_CMDS=("go" "gofmt")
+BLOCKED_CMDS=("adb")
 
 for blocked in "${BLOCKED_CMDS[@]}"; do
   if [ "$CMD" = "$blocked" ]; then
     echo "ERROR: Direct use of '$CMD' is blocked in this project." >&2
-    echo "Use run-for-agent.sh [--go-version=X.Y] [--target=host|GOOS/GOARCH] [go args] instead." >&2
+    echo "Use the android-installer skill's scripts instead: android-installer-start-adb-server.sh, android-installer-pair.sh, android-installer-connect.sh, android-installer-install.sh." >&2
     exit 2
   fi
 done

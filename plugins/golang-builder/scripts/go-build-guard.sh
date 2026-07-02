@@ -12,12 +12,12 @@ except Exception:
     print('')
 " 2>/dev/null)
 
-BLOCKED_CMDS=("gradle" "./gradlew" "gradlew" "javac" "kotlinc" "mvn" "./mvnw" "mvnw")
+BLOCKED_CMDS=("go" "gofmt")
 
 for blocked in "${BLOCKED_CMDS[@]}"; do
   if [ "$CMD" = "$blocked" ]; then
     echo "ERROR: Direct use of '$CMD' is blocked in this project." >&2
-    echo "Use build-for-agent.sh --mode=standard|android [gradle tasks] instead." >&2
+    echo "Use golang-builder-run.sh [--go-version=X.Y] [--target=host|GOOS/GOARCH] [go args] instead." >&2
     exit 2
   fi
 done

@@ -12,12 +12,12 @@ except Exception:
     print('')
 " 2>/dev/null)
 
-BLOCKED_CMDS=("npm" "npx" "node" "bun" "bunx")
+BLOCKED_CMDS=("gradle" "./gradlew" "gradlew" "javac" "kotlinc" "mvn" "./mvnw" "mvnw")
 
 for blocked in "${BLOCKED_CMDS[@]}"; do
   if [ "$CMD" = "$blocked" ]; then
     echo "ERROR: Direct use of '$CMD' is blocked in this project." >&2
-    echo "Use run-for-agent.sh [--pm=npm|bun|auto] [npm/bun args] instead." >&2
+    echo "Use android-builder-build.sh --mode=standard|android [gradle tasks] instead." >&2
     exit 2
   fi
 done

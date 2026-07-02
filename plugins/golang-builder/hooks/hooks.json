@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/skills/golang-builder/go-build-guard.sh"
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/go-build-guard.sh"
           }
         ]
       }

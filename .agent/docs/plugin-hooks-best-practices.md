@@ -1,5 +1,5 @@
 ---
-date: 2026-06-28
+date: 2026-07-02
 ---
 
 # Plugin Hooks, Scripts, and Persistent Data
@@ -8,7 +8,9 @@ date: 2026-06-28
 
 Hooks belong in `hooks/hooks.json` at the plugin root (alongside `.claude-plugin/`). The harness manages registration and updates automatically.
 
-Use `${CLAUDE_PLUGIN_ROOT}` to reference scripts — the harness substitutes it with the plugin's current install directory wherever it appears in hook commands, skill content, MCP/LSP config, etc. In SKILL.md bodies, write script paths as `${CLAUDE_PLUGIN_ROOT}/skills/<skill-name>/<script>` directly; the model executes this literally, so it always resolves through the stable path rather than the resolved absolute cache path shown when the skill loads.
+Use `${CLAUDE_PLUGIN_ROOT}` to reference scripts — the harness substitutes it with the plugin's current install directory wherever it appears in hook commands, skill content, MCP/LSP config, etc. In SKILL.md bodies, write script paths as `${CLAUDE_PLUGIN_ROOT}/bin/<script>` (see the `bin/` section below) directly; the model executes this literally, so it always resolves through the stable path rather than the resolved absolute cache path shown when the skill loads.
+
+Per the documented [standard plugin layout](https://code.claude.com/docs/en/plugins-reference), scripts referenced only from `hooks.json` (never invoked directly by the agent) belong in a top-level `scripts/` directory — not nested inside `skills/<name>/`. `scripts/` has no special harness behavior; it's just the conventional location, resolved the same way any other `${CLAUDE_PLUGIN_ROOT}` path is.
 
 ```json
 {
@@ -19,7 +21,7 @@ Use `${CLAUDE_PLUGIN_ROOT}` to reference scripts — the harness substitutes it 
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/skills/android-builder/jvm-build-guard.sh"
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/jvm-build-guard.sh"
           }
         ]
       }
@@ -43,7 +45,7 @@ This matters for permission rules: a `${CLAUDE_PLUGIN_ROOT}/...` reference still
 
 Since `bin/` is a single flat namespace shared by every enabled plugin, prefix script names with the plugin name (`npm-builder-run.sh`, not `run-for-agent.sh`) even when nothing collides today — a later plugin can easily pick the same generic name.
 
-Hook scripts (referenced from `hooks/hooks.json`, never invoked directly by the agent) don't need this — `${CLAUDE_PLUGIN_ROOT}` inside `hooks.json` is fine, since permission approval doesn't apply to hook execution the same way.
+Hook scripts (referenced from `hooks/hooks.json`, never invoked directly by the agent) don't need this — they belong in `scripts/` instead, referenced via `${CLAUDE_PLUGIN_ROOT}/scripts/<script>`, since permission approval doesn't apply to hook execution the same way.
 
 Don't have a skill capture the resolved path from the "Base directory for this skill: ..." line the harness prints when a skill loads (e.g. `SKILL_ROOT="$path"`). It's the same version-hashed cache path, just captured a different way, and it reintroduces the exact problem `${CLAUDE_PLUGIN_ROOT}`/`bin/` are meant to solve.
 
