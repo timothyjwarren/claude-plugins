@@ -1,11 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+if [[ $# -ne 2 || "$1" != "--data-dir" ]]; then
+  echo "Usage: $0 --data-dir <path>" >&2
+  exit 1
+fi
+DATA_DIR="$2"
+
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-BIN="${CLAUDE_PLUGIN_DATA:?CLAUDE_PLUGIN_DATA not set}/adb-wireless"
+BIN="$DATA_DIR/adb-wireless"
 
 if [[ ! -x "$BIN" ]]; then
-  echo "error: $BIN not found. Run android-installer-build-adb-wireless.sh first." >&2
+  echo "error: $BIN not found. Run android-installer-build-adb-wireless.sh --data-dir <path> first." >&2
   exit 1
 fi
 

@@ -82,12 +82,12 @@ error: .../adb-wireless not found. Run android-installer-build-adb-wireless.sh f
 **Fix:**
 
 ```bash
-android-installer-build-adb-wireless.sh
+android-installer-build-adb-wireless.sh --data-dir "${CLAUDE_PLUGIN_DATA}"
 ```
 
 The script compiles the binary and places it at `${CLAUDE_PLUGIN_DATA}/adb-wireless`,
 a directory that persists across plugin updates. After building, re-run
-`android-installer-pair.sh`.
+`android-installer-pair.sh --data-dir "${CLAUDE_PLUGIN_DATA}"`.
 
 Note: `android-installer-pair.sh` prepends the plugin's `bin/` to `PATH` so
 that `adb-wireless`'s internal shell-out to bare `adb` finds the bundled
@@ -112,7 +112,7 @@ after a reboot or settings change.
 **Fix:** re-run both scripts:
 
 ```bash
-android-installer-pair.sh
+android-installer-pair.sh --data-dir "${CLAUDE_PLUGIN_DATA}"
 android-installer-connect.sh
 ```
 

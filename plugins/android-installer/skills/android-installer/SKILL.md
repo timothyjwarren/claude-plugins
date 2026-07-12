@@ -34,7 +34,7 @@ There's also an unprefixed `adb` file in `bin/` — a thin passthrough to `andro
 Before pairing for the first time, check whether the binary already exists and build it only if missing:
 
 ```bash
-ls "${CLAUDE_PLUGIN_DATA}/adb-wireless" 2>/dev/null || android-installer-build-adb-wireless.sh
+ls "${CLAUDE_PLUGIN_DATA}/adb-wireless" 2>/dev/null || android-installer-build-adb-wireless.sh --data-dir "${CLAUDE_PLUGIN_DATA}"
 ```
 
 ## Workflow A: First session (device not yet paired)
@@ -48,7 +48,7 @@ android-installer-start-adb-server.sh
 ### Step 2 — Pair via QR code
 
 ```bash
-android-installer-pair.sh
+android-installer-pair.sh --data-dir "${CLAUDE_PLUGIN_DATA}"
 ```
 
 A new Terminal window will open displaying the QR code. On the device: open **Settings > Developer options > Wireless debugging > Pair device with QR code**, then scan the QR code. Close the Terminal window when done.
@@ -86,7 +86,7 @@ Skip the pairing steps. The device remembers the pairing.
 First, ensure the `adb-wireless` binary exists (it lives in `${CLAUDE_PLUGIN_DATA}`, so a fresh plugin install won't have it yet):
 
 ```bash
-ls "${CLAUDE_PLUGIN_DATA}/adb-wireless" 2>/dev/null || android-installer-build-adb-wireless.sh
+ls "${CLAUDE_PLUGIN_DATA}/adb-wireless" 2>/dev/null || android-installer-build-adb-wireless.sh --data-dir "${CLAUDE_PLUGIN_DATA}"
 ```
 
 Then connect and install. Ask the user for their device IP:port and APK path if not already provided:
@@ -111,9 +111,9 @@ If any step fails, read the file `references/troubleshooting.md` in the skill ro
 
 | Script | Purpose |
 |--------|---------|
-| `android-installer-build-adb-wireless.sh` | Builds the Docker-based adb-wireless binary into `${CLAUDE_PLUGIN_DATA}/adb-wireless`. Run once. |
+| `android-installer-build-adb-wireless.sh --data-dir <path>` | Builds the Docker-based adb-wireless binary into `<path>/adb-wireless`. Run once, passing `${CLAUDE_PLUGIN_DATA}`. |
 | `android-installer-start-adb-server.sh` | Starts the adb server inside Docker. Run at the start of every session. |
-| `android-installer-pair.sh` | Pairs the device via QR code (Android 11+). Run once per device. |
+| `android-installer-pair.sh --data-dir <path>` | Pairs the device via QR code (Android 11+). Run once per device, passing `${CLAUDE_PLUGIN_DATA}`. |
 | `android-installer-connect.sh` | Connects to a paired device by IP:port. Run each session. |
 | `android-installer-install.sh` | Installs an APK onto the connected device. |
 | `android-installer-adb` | Runs an adb command directly against the persistent adb-server container. Use for manual/diagnostic checks. |

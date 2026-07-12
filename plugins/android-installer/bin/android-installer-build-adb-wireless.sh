@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 # Cross-compiles adb-wireless for macOS inside a Linux Docker container using
-# cargo-zigbuild, then extracts the native binary to ${CLAUDE_PLUGIN_DATA}/adb-wireless.
-# CLAUDE_PLUGIN_DATA persists across plugin updates, unlike the plugin's own install dir.
+# cargo-zigbuild, then extracts the native binary to <data-dir>/adb-wireless.
+# The data dir persists across plugin updates, unlike the plugin's own install dir.
 set -euo pipefail
 
+if [[ $# -ne 2 || "$1" != "--data-dir" ]]; then
+  echo "Usage: $0 --data-dir <path>" >&2
+  exit 1
+fi
+DATA_DIR="$2"
+
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-DATA_DIR="${CLAUDE_PLUGIN_DATA:?CLAUDE_PLUGIN_DATA not set}"
 BIN="$DATA_DIR/adb-wireless"
 mkdir -p "$DATA_DIR"
 
