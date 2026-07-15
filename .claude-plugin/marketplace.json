@@ -9,6 +9,7 @@
     { "name": "agent-directory",   "source": "./plugins/agent-directory",   "description": "Standard directory layout for agent-authored files — context, docs, and scripts — kept separate from human-authored project files" },
     { "name": "android-builder",   "source": "./plugins/android-builder",   "description": "Build Kotlin/JVM and Android projects without a local SDK — runs entirely in Docker" },
     { "name": "android-installer", "source": "./plugins/android-installer", "description": "Install APKs on Android devices wirelessly — no USB, no local Android SDK, runs entirely in Docker" },
+    { "name": "git-cli-permissions", "source": "./plugins/git-cli-permissions", "description": "Auto-approve safe, local-only git/gh commands; defer everything else to normal permission settings" },
     { "name": "golang-builder",    "source": "./plugins/golang-builder",    "description": "Build, test, and vet Go projects across multiple Go versions — runs entirely in Docker" },
     { "name": "npm-builder",       "source": "./plugins/npm-builder",       "description": "Run npm/bun scripts without a local Node.js installation — runs entirely in Docker" },
     { "name": "readme-writer",     "source": "./plugins/readme-writer",     "description": "Write user-focused README files tailored to how the project actually works" }
