@@ -86,5 +86,48 @@ class ClassifyGitTests(unittest.TestCase):
         self.assertFalse(guard.classify_git(["git"]))
 
 
+class ClassifyGhTests(unittest.TestCase):
+    SAFE_PAIRS = [
+        ("pr", "view"), ("pr", "list"), ("pr", "diff"), ("pr", "checks"),
+        ("pr", "status"),
+        ("issue", "view"), ("issue", "list"), ("issue", "status"),
+        ("repo", "view"), ("repo", "list"),
+        ("run", "view"), ("run", "list"),
+        ("workflow", "view"), ("workflow", "list"),
+        ("release", "view"), ("release", "list"),
+    ]
+
+    def test_safe_pairs(self):
+        for noun, verb in self.SAFE_PAIRS:
+            with self.subTest(noun=noun, verb=verb):
+                self.assertTrue(guard.classify_gh(["gh", noun, verb]))
+
+    def test_safe_pair_with_extra_args(self):
+        self.assertTrue(
+            guard.classify_gh(["gh", "pr", "view", "123", "--comments"])
+        )
+
+    def test_unlisted_pair_is_not_safe(self):
+        self.assertFalse(guard.classify_gh(["gh", "pr", "create"]))
+
+    def test_pr_comment_is_not_safe(self):
+        self.assertFalse(guard.classify_gh(["gh", "pr", "comment", "123"]))
+
+    def test_repo_delete_is_not_safe(self):
+        self.assertFalse(guard.classify_gh(["gh", "repo", "delete"]))
+
+    def test_gh_api_is_not_safe(self):
+        self.assertFalse(guard.classify_gh(["gh", "api", "repos/x/y"]))
+
+    def test_gh_auth_is_not_safe(self):
+        self.assertFalse(guard.classify_gh(["gh", "auth", "login"]))
+
+    def test_bare_pr_is_not_safe(self):
+        self.assertFalse(guard.classify_gh(["gh", "pr"]))
+
+    def test_bare_gh_is_not_safe(self):
+        self.assertFalse(guard.classify_gh(["gh"]))
+
+
 if __name__ == "__main__":
     unittest.main()

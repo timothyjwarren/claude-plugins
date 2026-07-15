@@ -48,3 +48,22 @@ def classify_git(tokens):
         rest = tokens[2:]
         return not rest or rest == ["-v"] or rest == ["show"]
     return subcommand in GIT_FLAT_SAFE_SUBCOMMANDS
+
+
+GH_SAFE_PAIRS = {
+    ("pr", "view"), ("pr", "list"), ("pr", "diff"), ("pr", "checks"),
+    ("pr", "status"),
+    ("issue", "view"), ("issue", "list"), ("issue", "status"),
+    ("repo", "view"), ("repo", "list"),
+    ("run", "view"), ("run", "list"),
+    ("workflow", "view"), ("workflow", "list"),
+    ("release", "view"), ("release", "list"),
+}
+
+
+def classify_gh(tokens):
+    """Return True if a `gh <noun> <verb>` token list's pair is safe-listed."""
+    if len(tokens) < 3:
+        return False
+    noun, verb = tokens[1], tokens[2]
+    return (noun, verb) in GH_SAFE_PAIRS
