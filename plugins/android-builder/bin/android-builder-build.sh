@@ -33,6 +33,8 @@ if [ ${#GRADLE_ARGS[@]} -eq 0 ]; then
   fi
 fi
 
+GRADLE_ARGS+=("--no-daemon")
+
 STANDARD_PLATFORM_FLAG=""
 ANDROID_PLATFORM_FLAG="--platform linux/amd64"
 if [ "$(uname -m)" = "arm64" ]; then
