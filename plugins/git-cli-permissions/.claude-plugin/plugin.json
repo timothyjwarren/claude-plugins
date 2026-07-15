@@ -1,0 +1,5 @@
+{
+  "name": "git-cli-permissions",
+  "description": "Auto-approve safe, local-only git/gh commands (status, diff, add, commit, fetch, pull, gh pr view, etc.); defer everything else to normal permission settings",
+  "category": "development"
+}
