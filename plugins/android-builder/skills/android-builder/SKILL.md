@@ -65,6 +65,15 @@ Common issues:
 - Missing dependencies: check `build.gradle.kts` repositories block
 - Android SDK version mismatch: check `compileSdk`/`targetSdk` in `build.gradle.kts`; verify against SDK versions in the Android image
 
+### Test Failures
+
+The build log's console output is often terse for test failures (e.g. just an exception class name, no message or stack trace). The full report is on the host, not just inside the container — the project directory is bind-mounted to `/workspace`, so everything Gradle writes under `app/build/` (including test reports) lands back at the same path on the host. Never `docker run` to inspect build output; read it directly:
+
+```bash
+cat app/build/reports/tests/testDebugUnitTest/classes/<ClassName>.html   # or open in a browser
+cat app/build/test-results/testDebugUnitTest/TEST-<ClassName>.xml
+```
+
 ## android-builder-gradle-init.sh Failures
 
 If `android-builder-gradle-init.sh` fails, it also writes `log: /path/to/log` to stderr. Read the log the same way:
