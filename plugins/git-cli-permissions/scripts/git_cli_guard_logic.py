@@ -1,4 +1,6 @@
+import json
 import shlex
+import sys
 
 _OPERATOR_TOKENS = {"&&", "||", ";", "|"}
 
@@ -67,3 +69,51 @@ def classify_gh(tokens):
         return False
     noun, verb = tokens[1], tokens[2]
     return (noun, verb) in GH_SAFE_PAIRS
+
+
+def is_safe_segment(tokens):
+    if not tokens:
+        return False
+    if tokens[0] == "git":
+        return classify_git(tokens)
+    if tokens[0] == "gh":
+        return classify_gh(tokens)
+    return False
+
+
+def decide(command):
+    """Given a raw shell command string, return an allow decision dict,
+    or None to defer to normal permission handling."""
+    if not command or not command.strip():
+        return None
+    segments = split_segments(command)
+    if not segments or not all(is_safe_segment(seg) for seg in segments):
+        return None
+    reason = "Recognized safe git/gh command(s): " + " | ".join(
+        " ".join(seg) for seg in segments
+    )
+    return {
+        "hookSpecificOutput": {
+            "hookEventName": "PreToolUse",
+            "permissionDecision": "allow",
+            "permissionDecisionReason": reason,
+        }
+    }
+
+
+def main():
+    raw = sys.stdin.read()
+    try:
+        data = json.loads(raw)
+        command = data.get("command", "")
+    except (json.JSONDecodeError, AttributeError):
+        command = ""
+
+    result = decide(command)
+    if result is not None:
+        print(json.dumps(result))
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()

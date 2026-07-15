@@ -129,5 +129,46 @@ class ClassifyGhTests(unittest.TestCase):
         self.assertFalse(guard.classify_gh(["gh"]))
 
 
+class DecideTests(unittest.TestCase):
+    def test_single_safe_git_command_allows(self):
+        result = guard.decide("git status")
+        self.assertIsNotNone(result)
+        self.assertEqual(
+            result["hookSpecificOutput"]["permissionDecision"], "allow"
+        )
+        self.assertEqual(
+            result["hookSpecificOutput"]["hookEventName"], "PreToolUse"
+        )
+        self.assertIn(
+            "permissionDecisionReason", result["hookSpecificOutput"]
+        )
+
+    def test_single_safe_gh_command_allows(self):
+        result = guard.decide("gh pr view 123")
+        self.assertIsNotNone(result)
+        self.assertEqual(
+            result["hookSpecificOutput"]["permissionDecision"], "allow"
+        )
+
+    def test_unsafe_git_command_defers(self):
+        self.assertIsNone(guard.decide("git push"))
+
+    def test_non_git_command_defers(self):
+        self.assertIsNone(guard.decide("rm -rf foo"))
+
+    def test_chain_all_safe_allows(self):
+        result = guard.decide("git add . && git commit -m x")
+        self.assertIsNotNone(result)
+
+    def test_chain_with_one_unsafe_segment_defers(self):
+        self.assertIsNone(guard.decide("git add . && git push"))
+
+    def test_chain_mixing_safe_git_and_unrelated_command_defers(self):
+        self.assertIsNone(guard.decide("git status && rm -rf foo"))
+
+    def test_empty_command_defers(self):
+        self.assertIsNone(guard.decide(""))
+
+
 if __name__ == "__main__":
     unittest.main()
