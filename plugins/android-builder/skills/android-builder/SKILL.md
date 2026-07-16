@@ -9,6 +9,8 @@ Before building:
 - Docker must be running
 - Direct `gradle`, `./gradlew`, `javac`, `kotlinc` calls are blocked by the plugin hook — use `android-builder-build.sh` instead
 
+`android-builder-build.sh` is a thin wrapper around `./gradlew` in a container — it passes tasks straight through and doesn't alter Gradle's task graph. Standard Gradle semantics apply, including task dependencies: e.g. by default `testDebugUnitTest` does not depend on `assembleDebug`, so running it after an edit doesn't tell you anything about whether `app-debug.apk` was rebuilt — unless the project's own build config wires that dependency. Check the project's task graph (`./gradlew :app:testDebugUnitTest --dry-run` via the wrapper, or the build files) if unsure which tasks a given task actually triggers.
+
 ## Project Bootstrap
 
 If the project has no `gradlew` yet (new project, not cloned with existing wrapper):
