@@ -103,6 +103,18 @@ When done, stop the adb server:
 docker stop adb-server
 ```
 
+## Pulling files from the device (e.g. screenshots)
+
+`android-installer-adb pull` runs inside the persistent `adb-server` Docker container (via
+`docker exec`), so `android-installer-adb pull <device-path> <container-path>` lands in the
+*container's* filesystem, not the host. To get the file onto the host, copy it out with
+`docker cp` afterward:
+
+```bash
+android-installer-adb pull /sdcard/Pictures/Screenshots/foo.png /tmp/foo.png
+docker cp adb-server:/tmp/foo.png /absolute/host/path/foo.png
+```
+
 ## Troubleshooting
 
 If any step fails, read the file `references/troubleshooting.md` in the skill root directory for diagnosis steps and common fixes.
