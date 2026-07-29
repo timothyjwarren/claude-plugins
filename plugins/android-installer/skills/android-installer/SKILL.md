@@ -115,6 +115,34 @@ android-installer-adb pull /sdcard/Pictures/Screenshots/foo.png /tmp/foo.png
 docker cp adb-server:/tmp/foo.png /absolute/host/path/foo.png
 ```
 
+## Installing to a work profile / non-default user
+
+Android tracks each profile (personal, work profile, guest, etc.) as a separate numeric "user
+ID." The default install target for `android-installer-install.sh` is the primary/personal
+profile — that doesn't change unless you pass `--user`.
+
+To install into a work profile or other secondary user:
+
+1. List the available users and the device's hardware serial:
+
+   ```bash
+   android-installer-list-users.sh
+   ```
+
+2. If more than one non-primary user is listed, ask which profile they mean before proceeding.
+
+3. Install with the `--user` flag:
+
+   ```bash
+   android-installer-install.sh --user <id> /absolute/path/to/app.apk
+   ```
+
+**Caching recommendation:** this workflow is stateless by design — the plugin persists nothing.
+*Only when a work-profile/non-default-user install is requested* (not as a standing habit),
+consider remembering the `<device serial> -> <user id>` mapping — e.g. via your memory system,
+if you have one — so the same device doesn't require re-asking which profile to use next time.
+This is a judgment call, not something the plugin enforces or provides storage for.
+
 ## Troubleshooting
 
 If any step fails, read the file `references/troubleshooting.md` in the skill root directory for diagnosis steps and common fixes.
@@ -127,5 +155,6 @@ If any step fails, read the file `references/troubleshooting.md` in the skill ro
 | `android-installer-start-adb-server.sh` | Starts the adb server inside Docker. Run at the start of every session. |
 | `android-installer-pair.sh --data-dir <path>` | Pairs the device via QR code (Android 11+). Run once per device, passing `${CLAUDE_PLUGIN_DATA}`. |
 | `android-installer-connect.sh` | Connects to a paired device by IP:port. Run each session. |
-| `android-installer-install.sh` | Installs an APK onto the connected device. |
+| `android-installer-install.sh` | Installs an APK onto the connected device. Add `--user <id>` to target a specific profile (e.g. a work profile). |
+| `android-installer-list-users.sh` | Lists Android user IDs (profiles) and the device's hardware serial. Run before installing to a work profile or other non-default user. |
 | `android-installer-adb` | Runs an adb command directly against the persistent adb-server container. Use for manual/diagnostic checks. |
