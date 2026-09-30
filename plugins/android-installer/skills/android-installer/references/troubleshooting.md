@@ -10,43 +10,29 @@ wireless ADB install workflow.
 
 ---
 
-## 1. Install container cannot reach the adb server (host-gateway issues)
+## 1. Install fails or the device is not found
 
-The install container must reach the adb server running on the host. `android-installer-install.sh`
-resolves the host address automatically:
+`android-installer-install.sh` copies the APK into the `adb-server` container
+(`docker cp`) and runs `adb install` there through `android-installer-adb`, so
+it uses the same connected devices and keys as `connect`/`pair`. No second
+container or host networking is involved.
 
-- **Docker Desktop (Mac / Windows):** uses `host.docker.internal`, which Docker
-  Desktop provides out of the box.
-- **Linux:** queries the bridge gateway with `docker network inspect`, then falls
-  back to `172.17.0.1` if inspection fails.
-
-If the container starts but then hangs or reports a connection refused error,
-the wrong gateway address was resolved. Debug steps:
+If the install reports `no devices/emulators found`, confirm the device is
+connected:
 
 ```bash
-# From the host, confirm which address the container should use:
-docker network inspect bridge --format '{{range .IPAM.Config}}{{.Gateway}}{{end}}'
-
-# Verify adb is listening on the host:
-android-installer-adb devices   # starts the server if not running
-
-# Temporarily override inside a test container:
-docker run --rm -e ANDROID_ADB_SERVER_ADDRESS=<gateway-ip> \
-  --add-host host.docker.internal:<gateway-ip> \
-  <image> adb devices
+android-installer-adb devices
 ```
 
-On Linux, if `host.docker.internal` does not resolve, pass
-`--add-host host.docker.internal:$(ip route | awk '/default/{print $3}')`
-to your `docker run` invocation.
+If the device is missing, run `android-installer-connect.sh` again. If the
+`adb-server` container is not running, start it with
+`android-installer-start-adb-server.sh`.
 
 ---
 
 ## 2. Conflicting adb servers
 
-The install container deliberately does **not** start its own adb server. It
-proxies to the host server via the `ANDROID_ADB_SERVER_ADDRESS` environment
-variable.
+All adb commands run against the single `adb-server` container.
 
 **Symptom:** device is not listed, or you see `adb: failed to start daemon`.
 
@@ -55,15 +41,15 @@ variable.
 **Fix:**
 
 ```bash
-# Kill any rogue servers on the host:
+# Kill any rogue servers:
 android-installer-adb kill-server
 android-installer-adb start-server   # restarts cleanly on port 5037
 
 # Do NOT start adb inside the container manually.
 ```
 
-Only one adb server should be running at a time — the one on the host that
-`android-installer-install.sh` connects to.
+Only one adb server should be running at a time — the one in the `adb-server`
+container.
 
 ---
 

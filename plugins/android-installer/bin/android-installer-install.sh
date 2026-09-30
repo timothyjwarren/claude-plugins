@@ -52,32 +52,24 @@ main() {
     exit 1
   fi
 
-  local apk_abs adb_host
+  local apk_abs remote_apk script_dir
   apk_abs="$(cd "$(dirname "$APK")" && pwd)/$(basename "$APK")"
-
-  # Docker Desktop (Mac/Windows) exposes the host via host.docker.internal.
-  # Linux Docker uses the docker bridge gateway (host-gateway alias or 172.17.0.1).
-  if [[ "$(uname)" == "Darwin" || "$(uname)" == "MINGW"* || "$(uname)" == "MSYS"* ]]; then
-    adb_host="host.docker.internal"
-  else
-    adb_host="host-gateway"
-  fi
+  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  remote_apk="/tmp/install-$$.apk"
 
   local -a install_args=(install)
   if [[ -n "$USER_ID" ]]; then
     install_args+=(--user "$USER_ID")
   fi
-  install_args+=(/app.apk)
+  install_args+=("$remote_apk")
 
-  echo "Installing $(basename "$apk_abs") via dockerized adb (server: $adb_host:5037)${USER_ID:+, user $USER_ID}..."
+  echo "Installing $(basename "$apk_abs") via the adb-server container${USER_ID:+, user $USER_ID}..."
 
-  docker run --rm \
-    --add-host=host-gateway:"$(docker network inspect bridge --format '{{(index .IPAM.Config 0).Gateway}}' 2>/dev/null || echo 172.17.0.1)" \
-    -e ANDROID_ADB_SERVER_ADDRESS="$adb_host" \
-    -e ANDROID_ADB_SERVER_PORT=5037 \
-    -v "$apk_abs":/app.apk \
-    mingc/android-build-box:latest \
-    adb "${install_args[@]}"
+  docker cp "$apk_abs" "adb-server:$remote_apk"
+  local rc=0
+  "$script_dir/android-installer-adb" "${install_args[@]}" || rc=$?
+  docker exec adb-server rm -f "$remote_apk" >/dev/null 2>&1 || true
+  exit "$rc"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
